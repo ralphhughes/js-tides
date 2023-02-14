@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 	<head>
@@ -7,13 +6,9 @@
 		<title>Llandudno Tides</title>
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 		<style>
-			.chart-container {
-				position: relative;
-				width: 80vh;
-				height: 80vh;
-			}
 		</style>
 		<script src="chart.js"></script>
+		<script src="chartjs-adapter-date-fns.js"></script>
 	</head>
 	<body>
 		<div class="chart-container">
@@ -35,32 +30,57 @@
 						tension: 0.1
 					}]
 				};
-				const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
+				
 				// Populate dataset from JSON
 				data.forEach(item => {
 					var date = new Date(item[0] * 1000); // Convert Unix timestamp to milliseconds
-					const coeff = 1000 * 60; // 1 minute
-					date = new Date(Math.round(date.getTime() / coeff) * coeff) // Round to 1 minute
-					var day = days[date.getDay()]
-					var strDate = day + " " + date.getHours() + ":" + date.getMinutes();
-					chartData.labels.push(strDate);
-					chartData.datasets[0].data.push(item[1]);
+					chartData.labels.push(date);
+					chartData.datasets[0].data.push({x: date, y: item[1]});
 				});
 				
 				// Set chart options
 				var options = {
+					animation: false,
 					responsive: true,
+					maintainAspectRatio: false,
+					
+					plugins: {
+						legend: {
+							display: false
+						}
+					},
 					scales: {
+						x: {
+							type: 'time',
+							time: {
+								round: 'minute',
+								tooltipFormat: 'yyyy-MM-dd HH:mm',
+								displayFormats: { /* force display formats at possible zoom levels */
+									millisecond: 'HH:mm:ss',
+									second: 'HH:mm:ss',
+									minute: 'HH:mm',
+									hour: 'HH:mm'
+								}
+							},
+						},
 						y: {
 							min: -0.5,
-							max: 8.6
-						}
+							max: 8.6,
+							title: {
+								display: true,
+								text: 'Height (m) above chart datum'
+							}
+						},
 					}
 				};
 				
+				// Scale chart to viewport
+				const canvas = document.getElementById('myChart');
+				canvas.width = window.innerWidth * 0.9;
+				canvas.height = window.innerHeight * 0.9;
+				
 				// Apply dataset and options to chart
-				const ctx = document.getElementById('myChart').getContext('2d');
+				var ctx = canvas.getContext('2d');
 				const myChart = new Chart(ctx, {
 					type: 'line',
 					data: chartData,
