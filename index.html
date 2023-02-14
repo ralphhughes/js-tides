@@ -1,0 +1,72 @@
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Llandudno Tides</title>
+		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+		<style>
+			
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		
+	</head>
+	<body>
+		<div>
+			<canvas id="myChart"></canvas>
+		</div>
+		
+		
+		<script>
+			fetch("https://ralphius.duckdns.org/heights.php")
+			.then(response => response.json())
+			.then(data => {
+				// Create dataset
+				const chartData = {
+					labels: [],
+					datasets: [{
+						label: 'Tide Height',
+						data: [],
+						borderColor: 'rgb(75, 192, 192)',
+						tension: 0.1
+					}]
+				};
+				const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+				// Populate dataset from JSON
+				data.forEach(item => {
+					var date = new Date(item[0] * 1000); // Convert Unix timestamp to milliseconds
+					const coeff = 1000 * 60; // 1 minute
+					date = new Date(Math.round(date.getTime() / coeff) * coeff) // Round to 1 minute
+					var day = days[date.getDay()]
+					var strDate = day + " " + date.getHours() + ":" + date.getMinutes();
+					chartData.labels.push(strDate);
+					chartData.datasets[0].data.push(item[1]);
+				});
+				
+				// Set chart options
+				var options = {
+					scales: {
+						y: {
+							min: 0,
+							max: 8.5
+						}
+					}
+				};
+				
+				// Apply dataset and options to chart
+				const ctx = document.getElementById('myChart').getContext('2d');
+				const myChart = new Chart(ctx, {
+					type: 'line',
+					data: chartData,
+					options: options
+				});
+				
+			});
+			
+			
+		</script>
+		
+	</body>
+</html>
+
