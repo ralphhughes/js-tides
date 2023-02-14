@@ -3,16 +3,20 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Llandudno Tides</title>
 		<link rel="icon" href="data:;base64,iVBORw0KGgo=">
 		<style>
-			
+			.chart-container {
+				position: relative;
+				width: 80vh;
+				height: 80vh;
+			}
 		</style>
-		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-		
+		<script src="chart.js"></script>
 	</head>
 	<body>
-		<div>
+		<div class="chart-container">
 			<canvas id="myChart"></canvas>
 		</div>
 		
@@ -46,6 +50,7 @@
 				
 				// Set chart options
 				var options = {
+					responsive: true,
 					scales: {
 						y: {
 							min: -0.5,
