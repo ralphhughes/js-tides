@@ -18,7 +18,7 @@
 		
 		
 		<script>
-			fetch("https://ralphius.duckdns.org/heights.php")
+			fetch("heights.php")
 			.then(response => response.json())
 			.then(data => {
 				// Create dataset
@@ -48,8 +48,8 @@
 				var options = {
 					scales: {
 						y: {
-							min: 0,
-							max: 8.5
+							min: -0.5,
+							max: 8.6
 						}
 					}
 				};
