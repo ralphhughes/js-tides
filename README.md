@@ -1,6 +1,6 @@
 # js-tides
 
-Simple web-based tidal charting app
+Simple web-based tidal charting app. Basically a Javascript frontend (using chart.js) for the linux xtide program.
 
 ## Install process
 
@@ -10,9 +10,9 @@ Example for Ubuntu Linux 18.04:
 ```
 $ sudo apt install xtide
 
-$ sudo apt install nginx
+$ sudo apt install nginx php-fpm
 
-echo "server {
+$ echo "server {
 	root /var/www/html;
 	index index.php index.html index.htm;
 	location ~ \.php$ {
@@ -25,109 +25,7 @@ echo "server {
 
 $ cd /var/www/html
 
-$ git clone https://github.com/ralphhughes/js-tides.git
-
+$ git clone https://github.com/ralphhughes/js-tides.git .
 
 ```
 
-Llandudno Tidal heights
-{
-	"atlas": "BODC",
-	"station": "Llandudno",
-	"requestDatum": "CD",
-	"responseDatum": "CD",
-	"datums": [
-		{
-			"name": "HAT",
-			"height": 8.675
-		},
-		{
-			"name": "MHHWS",
-			"height": 7.829
-		},
-		{
-			"name": "MHWS",
-			"height": 7.707
-		},
-		{
-			"name": "MLHWS",
-			"height": 7.584
-		},
-		{
-			"name": "MHHW",
-			"height": 6.997
-		},
-		{
-			"name": "MHW",
-			"height": 6.91
-		},
-		{
-			"name": "MLHW",
-			"height": 6.805
-		},
-		{
-			"name": "MHHWN",
-			"height": 6.033
-		},
-		{
-			"name": "MHWN",
-			"height": 5.938
-		},
-		{
-			"name": "MLHWN",
-			"height": 5.842
-		},
-		{
-			"name": "MTL",
-			"height": 4.091
-		},
-		{
-			"name": "MHLWN",
-			"height": 2.34
-		},
-		{
-			"name": "MLWN",
-			"height": 2.179
-		},
-		{
-			"name": "MLLWN",
-			"height": 2.018
-		},
-		{
-			"name": "MHLW",
-			"height": 1.368
-		},
-		{
-			"name": "MLW",
-			"height": 1.271
-		},
-		{
-			"name": "MLLW",
-			"height": 1.16
-		},
-		{
-			"name": "MHLWS",
-			"height": 0.651
-		},
-		{
-			"name": "MLWS",
-			"height": 0.516
-		},
-		{
-			"name": "MLLWS",
-			"height": 0.382
-		},
-		{
-			"name": "LAT",
-			"height": -0.507
-		},
-		{
-			"name": "CD",
-			"height": 0
-		},
-		{
-			"name": "MSL",
-			"height": 4.06
-		}
-	]
-}
