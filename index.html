@@ -107,7 +107,7 @@
 				var timestamp = document.getElementById('timestamp');
 				var loc = document.getElementById('location');
 				console.log("Reload called for location: " + loc.value + ", date: " + timestamp.value);
-				fetch("heights.php?location=" + loc.value + "&timestamp=" + timestamp.value)
+				fetch("heights.php?location=" + loc.value + "&timestamp=" + timestamp.value, {cache: "reload"})
 				.then(response => response.json())
 				.then(data => {
 					// Create dataset
