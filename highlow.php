@@ -7,8 +7,8 @@
 // Location:Llandudno, ExcludeMetadata:SunriseSunsetMoonriseMoonsetMoonPhase, PredictionLength:7Days, Mode:PlainHighLows, Format:CSV
 
 $dateYesterday = date('Y-m-d',strtotime("-1 days"));
-
-$cmd = 'tide -l "Llandudno, Gwynedd, Wales" -b "' . $dateYesterday . ' 00:00" -em pSsMm -pi 8 -m p -f c';
+// -em pSsMm
+$cmd = 'tide -l "Llandudno, Gwynedd, Wales" -b "' . $dateYesterday . ' 00:00" -pi 7 -m p -f c';
 
 $descriptorspec = array(
    0 => array("pipe", "r"),   // stdin is a pipe that the child will read from
@@ -29,9 +29,11 @@ if (is_resource($process)) {
 	// Trim units off height
 	$myArr[3] = floatval($myArr[3]);
 
+	// Trim control chars off high/low tide text
+	$myArr[4] = preg_replace('/[\x00-\x1F\x7F]/u', '', $myArr[4]);
 	// Back to CSV again
         // print implode(",", $myArr);
-	$rows[]=array($myArr[0] + 0, $myArr[3]);
+	$rows[]=array($myArr[0] + 0, $myArr[3], $myArr[4]);
     }
 }
 echo json_encode($rows);

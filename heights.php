@@ -1,19 +1,26 @@
 <?php
 	error_reporting(E_STRICT);
 	// This API endpoint outputs a CSV of the tide height every 15 minutes for the given location and day
+	// Example: heights.php?location=Llandudno,%20Gwynedd,%20Wales&timestamp=2023-03-08&days=2
 	// Columns:
 	// UnixTimestamp<Long>, TideHeight<Float>
 	
 	// Strip any control characters from location then escape it (will single quote it)
 	$location = escapeshellarg(preg_replace('/[\x00-\x1F\x7F]/u', '', $_GET['location']));
 	
-	// Strip everything except numbers and dashes from timestamp (date)
+	// Strip everything except numbers,dashes, colons and spaces from timestamp (ISO8601 date) and escape it
 	$timestamp = escapeshellarg(preg_replace("/[^\:\ \d-]/i", "", $_GET['timestamp'] . " 00:00"));
+
+	// Convert days to integer greater than zero
+	$numDays = (int) $_GET['days'];
+	if ($numDays < 1 || $numDays > 366) {
+		$numDays = 1;
+	}
 	
-	
+
 	// Command line for xtide
 	// Location:Llandudno, ExcludeMetadata:PhaseSunriseSunsetMoonriseMoonset, StepInterval:15min, PeriodToGenerateLength:1Day, Mode:RawUnixTimestamps, Format:CSV
-	$cmd = 'tide -l ' . $location . ' -b ' . $timestamp . ' -em pSsMm -s "00:15" -pi 1.5 -m r -f c';
+	$cmd = 'tide -l ' . $location . ' -b ' . $timestamp . ' -em pSsMm -s "00:15" -pi ' . $numDays . ' -m r -f c';
 	
 	// Debug
 	// print($cmd . "\n");

@@ -26,18 +26,19 @@
 		<title>Tides</title>
 		<style>
 			.title, input, select {
-				font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-				font-size: 2.5vh;
-				font-style: normal;
-				text-align: center;
-				margin: 0 auto;
+			font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+			font-size: 2.5vh;
+			font-style: normal;
+			text-align: center;
+			margin: 0 auto;
 			}
 			select {
-				text-align: left;
+			text-align: left;
 			}
 		</style>
 		<script src="resources/chart.js"></script>
 		<script src="resources/chartjs-adapter-date-fns.js"></script>
+		<script src="resources/chartjs-plugin-annotation.min.js"></script>
 	</head>
 	<body>
 		<h1 class="title">
@@ -91,23 +92,36 @@
 			</select>
 			on
 			<input type="date" id="timestamp" name="timestamp" onchange="reload()"/>
+			for
+			<select name="days" id="days" onchange="reload()">
+				<option value="1">1 day</option>
+				<option selected="selected" value="2">2 days</option>
+				<option value="5">5 days</option>
+				<option value="7">1 week</option>
+			</select>
 		</h1>
 		<div class="chart-container">
 			<canvas id="tideChart"></canvas>
 		</div>
-		
-		
+		<!--
+		<input type="button" id="btnDetails" name="btnTimestamp" onclick="alert('hello!');" value="Details"/>
+		-->
 		<script>
 			
 			function reload() {
 				
 				const minHeight = -0.5;
 				const maxHeight = 8.5;
+				const gridColour = 'rgb(160,160,160)';
 				
 				var timestamp = document.getElementById('timestamp');
 				var loc = document.getElementById('location');
+				var days = document.getElementById('days');
+				var chart_start_timestamp = new Date();
+				chart_start_timestamp.setHours(0,0,0,0);
+				
 				console.log("Reload called for location: " + loc.value + ", date: " + timestamp.value);
-				fetch("heights.php?location=" + loc.value + "&timestamp=" + timestamp.value, {cache: "reload"})
+				fetch("heights.php?location=" + loc.value + "&timestamp=" + timestamp.value + "&days=" + days.value, {cache: "reload"})
 				.then(response => response.json())
 				.then(data => {
 					// Create dataset
@@ -118,15 +132,6 @@
 							data: [], /* Tidal data filled in later from API */
 							borderColor: 'rgb(75, 192, 192)',
 							tension: 0.1
-						},
-						{
-							type: 'line',
-							data: [ /* Abusing a 2nd dataset to draw a vertical line at the current timestamp */
-							{x: new Date(), y: minHeight - 1},
-							{x: new Date(), y: maxHeight + 1}
-							],
-							borderColor: 'rgb(255,0,0)',
-							
 						}]
 					};
 					
@@ -136,6 +141,8 @@
 						chartData.labels.push(date);
 						chartData.datasets[0].data.push({x: date, y: item[1]});
 					});
+					
+
 					
 					// Set chart options
 					var options = {
@@ -149,6 +156,24 @@
 							},
 							legend: {
 								display: false
+							},
+							annotation: {
+								annotations: {
+									current_time_line: {
+										type: 'line',
+										xMin: new Date(),
+										xMax: new Date(),
+										borderColor: 'rgb(255, 99, 132)',
+										borderWidth: 3,
+									},
+									midnight_line: {
+										type: 'line',
+										xMin: chart_start_timestamp,
+										xMax: chart_start_timestamp,
+										borderColor: gridColour,
+										borderWidth: 1.5,
+									},
+								}
 							}
 						},
 						scales: {
@@ -164,6 +189,10 @@
 										hour: 'HH:mm'
 									}
 								},
+								ticks: {
+									major: true,
+									stepSize: 1
+								},
 							},
 							y: {
 								min: minHeight,
@@ -176,6 +205,25 @@
 						}
 					};
 					
+					var annotations = options.plugins.annotation.annotations;
+					console.log(annotations);
+					
+					for (let i = 0; i < days.value; i++) {
+						var current_midnight = new Date();
+						current_midnight.setHours(0,0,0,0);
+						current_midnight.setDate(current_midnight.getDate() + i);
+						var current_midnight_line = {
+										type: 'line',
+										xMin: current_midnight,
+										xMax: current_midnight,
+										borderColor: gridColour,
+										borderWidth: 1.5,
+									};
+									
+						annotations['line' + i] = current_midnight_line;
+					}
+					console.log(annotations);
+					
 					// Scale chart to viewport
 					var chartCanvas = document.getElementById('tideChart'); //<canvas> id
 					chartCanvas.width = window.innerWidth * 0.9;
@@ -184,7 +232,7 @@
 					// Check if chart has been created previously. If so destroy it to make a new one
 					let chartStatus = Chart.getChart("tideChart"); // <canvas> id
 					if (chartStatus != undefined) {
-					  chartStatus.destroy();
+						chartStatus.destroy();
 					}
 					
 					var chartInstance = new Chart(chartCanvas, {
@@ -193,15 +241,22 @@
 						options: options
 					});
 					
-				});
-			}
-			
-			// Set the date picker to default to today
-			var timestamp = document.getElementById('timestamp');
-			timestamp.valueAsDate = new Date();
-			
-			reload();
-		</script>
-	</body>
-</html>
-
+					});
+				}
+				
+				// Set the date picker to default to today
+				var timestampElem = document.getElementById('timestamp');
+				var now = new Date();
+				
+				var minTimeLastTide = now;
+				minTimeLastTide.setHours(minTimeLastTide.getHours() - 6); // take off 6 hours
+				minTimeLastTide.setMinutes(0,0,0); // Sets minutes, seconds and milliseconds to zero
+				console.log("6 hours ago rounded down to previous hour: " + minTimeLastTide);
+				
+				timestampElem.valueAsDate = minTimeLastTide; // Note time part gets stripped when saved in input type="date"
+				
+				reload();
+			</script>
+		</body>
+	</html>
+	
