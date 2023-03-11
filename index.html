@@ -25,12 +25,15 @@
 		
 		<title>Tides</title>
 		<style>
+			@media all and (max-width: 600px) {
+			/*Put your mobile styles here*/
+			}
 			.title, input, select {
 			font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-			font-size: 2.5vh;
 			font-style: normal;
 			text-align: center;
 			margin: 0 auto;
+			font-size: 2.5vh;
 			}
 			select {
 			text-align: left;
@@ -39,6 +42,14 @@
 		<script src="resources/chart.js"></script>
 		<script src="resources/chartjs-adapter-date-fns.js"></script>
 		<script src="resources/chartjs-plugin-annotation.min.js"></script>
+		<script>
+			var isMobile = Math.min(window.screen.width, window.screen.height) < 768 || navigator.userAgent.indexOf("Mobi") > -1;
+			if (!isMobile) {
+				if (confirm("This page is optimised for mobiles and tablets.\n Press 'OK' to try the desktop interface, or 'Cancel' to stay on the mobile version.")) {
+					window.location.href = "desktop.html";
+				}
+			}
+		</script>
 	</head>
 	<body>
 		<h1 class="title">
@@ -104,24 +115,30 @@
 			<canvas id="tideChart"></canvas>
 		</div>
 		<!--
-		<input type="button" id="btnDetails" name="btnTimestamp" onclick="alert('hello!');" value="Details"/>
+			<input type="button" id="btnDetails" name="btnTimestamp" onclick="alert('hello!');" value="Details"/>
 		-->
 		<script>
-			
+			function addDays(date, days) {
+				var result = new Date(date);
+				result.setDate(result.getDate() + days);
+				return result;
+			}
 			function reload() {
 				
 				const minHeight = -0.5;
 				const maxHeight = 8.5;
-				const gridColour = 'rgb(160,160,160)';
+				const midnight_line_colour = 'rgb(160,160,160)';
 				
 				var timestamp = document.getElementById('timestamp');
 				var loc = document.getElementById('location');
 				var days = document.getElementById('days');
-				var chart_start_timestamp = new Date();
+				var chart_start_timestamp = new Date(timestamp.value);
 				chart_start_timestamp.setHours(0,0,0,0);
+				var chart_end_timestamp = addDays(chart_start_timestamp, parseInt(days.value, 10));
+				console.log("xMin: " + chart_start_timestamp.toISOString() + ", xMax: " + chart_end_timestamp.toISOString());
 				
-				console.log("Reload called for location: " + loc.value + ", date: " + timestamp.value);
-				fetch("heights.php?location=" + loc.value + "&timestamp=" + timestamp.value + "&days=" + days.value, {cache: "reload"})
+				console.log("Reload called for location: " + loc.value + ", date: " + timestamp.value + ", days: " + days.value);
+				fetch("heights.php?format=json&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=" + days.value, {cache: "reload"})
 				.then(response => response.json())
 				.then(data => {
 					// Create dataset
@@ -130,6 +147,7 @@
 						datasets: [{
 							label: 'Tide Height',
 							data: [], /* Tidal data filled in later from API */
+							pointRadius: 2.5,
 							borderColor: 'rgb(75, 192, 192)',
 							tension: 0.1
 						}]
@@ -142,7 +160,7 @@
 						chartData.datasets[0].data.push({x: date, y: item[1]});
 					});
 					
-
+					
 					
 					// Set chart options
 					var options = {
@@ -165,20 +183,15 @@
 										xMax: new Date(),
 										borderColor: 'rgb(255, 99, 132)',
 										borderWidth: 3,
-									},
-									midnight_line: {
-										type: 'line',
-										xMin: chart_start_timestamp,
-										xMax: chart_start_timestamp,
-										borderColor: gridColour,
-										borderWidth: 1.5,
-									},
+									}, /* midnight lines are generated dynamically so are not in this section */
 								}
 							}
 						},
 						scales: {
 							x: {
 								type: 'time',
+								min: chart_start_timestamp,
+								max: chart_end_timestamp,
 								time: {
 									round: 'minute',
 									tooltipFormat: 'yyyy-MM-dd HH:mm',
@@ -205,24 +218,21 @@
 						}
 					};
 					
+					// Add gray lines at midnights
 					var annotations = options.plugins.annotation.annotations;
-					console.log(annotations);
-					
 					for (let i = 0; i < days.value; i++) {
-						var current_midnight = new Date();
+						var current_midnight = new Date(chart_start_timestamp);
 						current_midnight.setHours(0,0,0,0);
 						current_midnight.setDate(current_midnight.getDate() + i);
 						var current_midnight_line = {
-										type: 'line',
-										xMin: current_midnight,
-										xMax: current_midnight,
-										borderColor: gridColour,
-										borderWidth: 1.5,
-									};
-									
+							type: 'line',
+							xMin: current_midnight,
+							xMax: current_midnight,
+							borderColor: midnight_line_colour,
+							borderWidth: 1.5,
+						};						
 						annotations['line' + i] = current_midnight_line;
 					}
-					console.log(annotations);
 					
 					// Scale chart to viewport
 					var chartCanvas = document.getElementById('tideChart'); //<canvas> id
@@ -241,22 +251,20 @@
 						options: options
 					});
 					
-					});
-				}
-				
-				// Set the date picker to default to today
-				var timestampElem = document.getElementById('timestamp');
-				var now = new Date();
-				
-				var minTimeLastTide = now;
-				minTimeLastTide.setHours(minTimeLastTide.getHours() - 6); // take off 6 hours
-				minTimeLastTide.setMinutes(0,0,0); // Sets minutes, seconds and milliseconds to zero
-				console.log("6 hours ago rounded down to previous hour: " + minTimeLastTide);
-				
-				timestampElem.valueAsDate = minTimeLastTide; // Note time part gets stripped when saved in input type="date"
-				
-				reload();
-			</script>
-		</body>
-	</html>
-	
+				});
+			}
+			
+			// Set the date picker to default to today (or yesterday if the time is between 00:01 and 06:00)
+			var timestampElem = document.getElementById('timestamp');
+			var now = new Date();
+			
+			if (now.getHours() < 6) {
+				now = addDays(now, -1); // Start yesterday so we can see previous tide
+			}
+			timestampElem.valueAsDate = now; // Note time part gets stripped when saved in input type="date"
+			
+			reload();
+		</script>
+	</body>
+</html>
+
