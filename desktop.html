@@ -3,9 +3,12 @@
 
 <head>
 	<meta charset="utf-8">
-
+	
 	<title>Tides - Desktop version</title>
 	<style>
+		#myDiv {
+			height: 90vh;
+		}
 	</style>
 	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 	<script>
@@ -19,7 +22,7 @@
 <body>
 	<h1 class="title">
 		Tides for 
-		<select name="location" id="location" onchange="reload()">
+		<select name="location" id="location" onchange="makeplot()">
 			<option value="Aberdeen, Scotland">Aberdeen</option>
 			<option value="Avonmouth, England">Avonmouth</option>
 			<option value="Bangor, Northern Ireland">Bangor (NI)</option>
@@ -67,37 +70,32 @@
 			<option value="Workington, England">Workington</option>
 		</select>
 		starting from
-		<input type="date" id="timestamp" name="timestamp" onchange="reload()" />
+		<input type="date" id="timestamp" name="timestamp" onchange="makeplot()" />
 	</h1>
 	<div id='myDiv'>
-
+		
 		<script>
 			// Globals?
 			var minDate = new Date();
 			var maxDate = new Date();
-		
-			function reload() {
-
-
-				// Set the date picker to default to today
-				var timestampElem = document.getElementById('timestamp');
-				var now = new Date();
-				timestampElem.valueAsDate = now; // Note time part gets stripped when saved in input type="date"
-
-			}
-
+			
+			
+			
 			function makeplot() {
 				var timestamp = document.getElementById('timestamp');
 				var loc = document.getElementById('location');
-
+				
 				Plotly.d3.csv("heights.php?format=csv&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=180" , function (data) { processData(data) });
-
+				
 			};
-
+			
 			function processData(allRows) {
-
+				
 				//console.log(allRows);
 				var x = [], y = []; standard_deviation = [];
+				
+				// Swap min and max date in case we're coming from a previous chart
+				[minDate, maxDate] = [maxDate, minDate];
 
 				for (var i = 0; i < allRows.length; i++) {
 					row = allRows[i];
@@ -115,62 +113,73 @@
 				console.log( 'X',x, 'Y',y, );
 				makePlotly(x, y, standard_deviation);
 			}
-
+			
 			function makePlotly(x, y, standard_deviation) {
 				var plotDiv = document.getElementById("plot");
 				var traces = [{
 					x: x,
 					y: y
 				}];
-
+				
 				var layout = {
+					/* paper_bgcolor: '#7f7f7f', */
+					autosize: true,
 					/* title: 'Custom Range',*/
 					xaxis: {
 						autorange: true,
 						range: [minDate, maxDate],
-						rangeselector: {buttons: [
-        {
-          count: 2,
-          label: '2d',
-          step: 'day',
-          stepmode: 'backward'
-        },
-		{
-          count: 1,
-          label: '1w',
-          step: 'week',
-          stepmode: 'backward'
-        },
-		{
-          count: 1,
-          label: '1m',
-          step: 'month',
-          stepmode: 'backward'
-        },
-        {
-          count: 6,
-          label: '6m',
-          step: 'month',
-          stepmode: 'backward'
-        },
-        {step: 'all'}
-      ]},
-    rangeslider: {range: [minDate, maxDate]},
+						rangeselector: {
+							buttons: [
+							{
+								count: 2,
+								label: '2d',
+								step: 'day',
+								stepmode: 'backward'
+							},
+							{
+								count: 1,
+								label: '1w',
+								step: 'week',
+								stepmode: 'backward'
+							},
+							{
+								count: 1,
+								label: '1m',
+								step: 'month',
+								stepmode: 'backward'
+							},
+							{
+								count: 3,
+								label: '3m',
+								step: 'month',
+								stepmode: 'backward'
+							},
+							{step: 'all'}
+							]
+						},
+						rangeslider: {
+							range: [minDate, maxDate]
+						},
 						type: 'date'
 					},
 					yaxis: {
 						/* autorange: true, */
 						range: [-0.5, 8.5],
+						zeroline: true,
 						type: 'linear'
 					}
 				};
-
+				
 				Plotly.newPlot('myDiv', traces, layout);
 			};
-			reload();
+			// Set the date picker to default to today
+			var timestampElem = document.getElementById('timestamp');
+			var now = new Date();
+			timestampElem.valueAsDate = now; // Note time part gets stripped when saved in input type="date"
+			
 			makeplot();
-
+			
 		</script>
-</body>
-
-</html>
+	</body>
+	
+	</html>
