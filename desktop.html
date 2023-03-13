@@ -75,28 +75,27 @@
 	<div id='myDiv'>
 		
 		<script>
-			// Globals?
-			var minDate = new Date();
-			var maxDate = new Date();
-			
-			
-			
+			// Functions first	
+			function addDays(date, days) {
+				var result = new Date(date);
+				result.setDate(result.getDate() + days);
+				return result;
+			}
+
 			function makeplot() {
-				var timestamp = document.getElementById('timestamp');
-				var loc = document.getElementById('location');
-				
-				Plotly.d3.csv("heights.php?format=csv&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=180" , function (data) { processData(data) });
+				Plotly.d3.csv("heights.php?format=csv&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=180" , function (err, data) { processData(err, data) });
 				
 			};
 			
-			function processData(allRows) {
+			function processData(err, allRows) {
+				if(err) throw err;
 				
 				//console.log(allRows);
 				var x = [], y = []; standard_deviation = [];
 				
 				// Swap min and max date in case we're coming from a previous chart
 				[minDate, maxDate] = [maxDate, minDate];
-
+				
 				for (var i = 0; i < allRows.length; i++) {
 					row = allRows[i];
 					// console.log(row['unix_time'] + " -> " + new Date(Number(row['unix_time'])*1000).toISOString());
@@ -126,15 +125,14 @@
 					autosize: true,
 					/* title: 'Custom Range',*/
 					xaxis: {
-						autorange: true,
-						range: [minDate, maxDate],
+						range: [defaultZoomStart, defaultZoomEnd],
 						rangeselector: {
 							buttons: [
 							{
 								count: 2,
 								label: '2d',
 								step: 'day',
-								stepmode: 'backward'
+								stepmode: 'forward'
 							},
 							{
 								count: 1,
@@ -158,25 +156,47 @@
 							]
 						},
 						rangeslider: {
+							autorange: true,
 							range: [minDate, maxDate]
 						},
 						type: 'date'
 					},
 					yaxis: {
-						/* autorange: true, */
+						fixedrange: true,
 						range: [-0.5, 8.5],
 						zeroline: true,
 						type: 'linear'
 					}
 				};
 				
-				Plotly.newPlot('myDiv', traces, layout);
+				var options = {
+					scrollZoom: true,
+					showLink: false,
+					modeBarButtonsToRemove: ['toggleSpikelines', 'autoScale2d'],
+					displaylogo: false,
+					displayModeBar: true,
+				};
+				
+				Plotly.newPlot('myDiv', traces, layout, options);
 			};
-			// Set the date picker to default to today
-			var timestampElem = document.getElementById('timestamp');
-			var now = new Date();
-			timestampElem.valueAsDate = now; // Note time part gets stripped when saved in input type="date"
 			
+			
+			// Globals
+			var minDate = new Date();
+			var maxDate = new Date();
+			var timestamp = document.getElementById('timestamp');
+			var loc = document.getElementById('location');
+
+
+
+			// Set the date picker to default to today
+			var now = new Date();
+			now = addDays(now, -1); // Start yesterday so we can see previous tide
+			timestamp.valueAsDate = now; // Note: Time part gets stripped when saved in input type="date"
+			
+
+			var defaultZoomStart = new Date().setHours(0,0,0,0); // Start at previous midnight
+			var defaultZoomEnd = addDays(defaultZoomStart, 28); // Show one tidal month
 			makeplot();
 			
 		</script>
