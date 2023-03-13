@@ -14,7 +14,7 @@
 	<script>
 		var isMobile = Math.min(window.screen.width, window.screen.height) < 768 || navigator.userAgent.indexOf("Mobi") > -1;
 		if (isMobile) {
-			window.location.href = "index.html";
+			// window.location.href = "index.html";
 		}
 	</script>
 </head>
@@ -81,7 +81,7 @@
 				result.setDate(result.getDate() + days);
 				return result;
 			}
-
+			
 			function makeplot() {
 				Plotly.d3.csv("heights.php?format=csv&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=180" , function (err, data) { processData(err, data) });
 				
@@ -135,9 +135,9 @@
 								stepmode: 'forward'
 							},
 							{
-								count: 1,
+								count: 7,
 								label: '1w',
-								step: 'week',
+								step: 'day',
 								stepmode: 'backward'
 							},
 							{
@@ -166,7 +166,20 @@
 						range: [-0.5, 8.5],
 						zeroline: true,
 						type: 'linear'
-					}
+					},
+					shapes: [{ // Draw a dashed line marking the current time and date
+						type: 'line',
+						x0: new Date(),
+						y0: 0,
+						x1: new Date(),
+						yref: 'paper',
+						y1: 1,
+						line: {
+							color: 'grey',
+							width: 1.5,
+							dash: 'dot'
+						}
+					}],
 				};
 				
 				var options = {
@@ -186,15 +199,15 @@
 			var maxDate = new Date();
 			var timestamp = document.getElementById('timestamp');
 			var loc = document.getElementById('location');
-
-
-
+			
+			
+			
 			// Set the date picker to default to today
 			var now = new Date();
 			now = addDays(now, -1); // Start yesterday so we can see previous tide
 			timestamp.valueAsDate = now; // Note: Time part gets stripped when saved in input type="date"
 			
-
+			
 			var defaultZoomStart = new Date().setHours(0,0,0,0); // Start at previous midnight
 			var defaultZoomEnd = addDays(defaultZoomStart, 28); // Show one tidal month
 			makeplot();
