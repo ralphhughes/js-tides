@@ -1,7 +1,10 @@
 # Dockerfile
-FROM nginx:latest
+FROM nginx:1.24-bullseye
 
-RUN apt-get update && apt-get install php-fpm xtide && apt-get clean
+RUN echo "deb http://deb.debian.org/debian bullseye main contrib non-free" > /etc/apt/sources.list && \
+    apt-get update && \
+    apt-get install -y php-fpm xtide xtide-data xtide-data-nonfree && \
+    apt-get clean
 
 RUN echo "server { \
     listen 80; \
