@@ -1,26 +1,28 @@
-# Dockerfile
-FROM nginx:1.24-bullseye
+# Dockerfile using Debian Bullseye based image
+#FROM nginx:1.24-bullseye
 
-RUN echo "deb http://deb.debian.org/debian bullseye main contrib non-free" > /etc/apt/sources.list && \
+FROM ubuntu:18.04
+
+# Install PHP and xtide
+RUN echo "deb http://archive.ubuntu.com/ubuntu bionic main restricted multiverse universe" > /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y php-fpm xtide xtide-data xtide-data-nonfree && \
+    apt-get install -y nginx php-fpm xtide xtide-data xtide-data-nonfree && \
     apt-get clean
 
-RUN echo "server { \
-    listen 80; \
-    root /usr/share/nginx/html; \
-    index index.php index.html index.htm; \
-    location / { \
-         try_files \$uri \$uri/ =404; \
-    } \
-    location ~ \.php$ { \
-         include snippets/fastcgi-php.conf; \
-         fastcgi_pass unix:/var/run/php/php-fpm.sock; \
-    } \
-}" > /etc/nginx/conf.d/default.conf
 
-COPY ./ /usr/share/nginx/html
+# Copy your NGINX configuration file (or you can configure it in the Dockerfile)
+COPY ./default.conf /etc/nginx/sites-available/default
 
+# Copy project files into image
+COPY ./public /var/www/html
+
+# Nginx is on port 80 internally
 EXPOSE 80
 
-CMD service php7.4-fpm start && nginx -g 'daemon off;'
+
+# Copy a startup script to the container
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Start NGINX and PHP-FPM via the startup script
+CMD ["/start.sh"]
