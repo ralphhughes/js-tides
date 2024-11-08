@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192"  href="favicons/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="favicons/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+		<link rel="manifest" href="favicons/manifest.json">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="favicons/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+		
+		<title>Tides</title>
+		<style>
+			@media all and (max-width: 600px) {
+				/*Put your mobile styles here*/
+			}
+			.title, input, select {
+				font-family: 'Roboto', Arial, sans-serif;
+				font-style: normal;
+				text-align: center;
+				margin: 0 auto;
+				font-size: 2.5vh;
+			}
+			select {
+				text-align: left;
+			}
+		</style>
+		<script src="js/chart.js"></script>
+		<script src="js/chartjs-adapter-date-fns.js"></script>
+		<script src="js/chartjs-plugin-annotation.min.js"></script>
+		<script>
+			var isMobile = Math.min(window.screen.width, window.screen.height) < 768 || navigator.userAgent.indexOf("Mobi") > -1;
+			if (!isMobile) {
+				//if (confirm("This page is optimised for mobiles and tablets.\n Press 'OK' to try the desktop interface, or 'Cancel' to stay on the mobile version.")) {
+				//	window.location.href = "desktop.html";
+				//}
+			}
+		</script>
+	</head>
+	<body>
+		<h1 class="title">
+			No adverts, no fluff, just tides for
+			<select name="location" id="location" onchange="reload()">
+				<option value="Aberdeen, Scotland">Aberdeen</option>
+				<option value="Avonmouth, England">Avonmouth</option>
+				<option value="Bangor, Northern Ireland">Bangor (NI)</option>
+				<option value="Barmouth, Wales">Barmouth</option>
+				<option value="Bournemouth, England">Bournemouth</option>
+				<option value="Cromer, England">Cromer</option>
+				<option value="Devonport, England">Devonport</option>
+				<option value="Dover, England">Dover</option>
+				<option value="Felixstowe, England">Felixstowe</option>
+				<option value="Fishguard, Wales">Fishguard</option>
+				<option value="Harwich, England">Harwich</option>
+				<option value="Heysham, England">Heysham</option>
+				<option value="Hinkley Point, England">Hinkley Point</option>
+				<option value="Holyhead, Wales">Holyhead</option>
+				<option value="Ilfracombe, England">Ilfracombe</option>
+				<option value="Immingham, England">Immingham</option>
+				<option value="Kinlochbervie, Scotland">Kinlochbervie</option>
+				<option value="Leith, Scotland">Leith</option>
+				<option value="Lerwick, Shetland Islands, Scotland">Lerwick</option>
+				<option value="Liverpool (Gladstone Dock), England">Liverpool</option>
+				<option selected="selected" value="Llandudno, Gwynedd, Wales">Llandudno</option>
+				<option value="Lowestoft, England">Lowestoft</option>
+				<option value="Milford Haven, Wales">Milford Haven</option>
+				<option value="Millport, Scotland">Millport</option>
+				<option value="Moray Firth (sheet pile wall), Scotland">Moray Firth</option>
+				<option value="Mumbles, Wales">Mumbles</option>
+				<option value="Newhaven, England">Newhaven</option>
+				<option value="Newlyn, England">Newlyn</option>
+				<option value="Newport, Gwent, Wales">Newport</option>
+				<option value="Northshields, England">Northshields</option>
+				<option value="Port Ellen, Islay, Western Scotland">Port Ellen</option>
+				<option value="Port Erin, Isle of Man">Port Erin</option>
+				<option value="Portpatrick, Scotland">Portpatrick</option>
+				<option value="Portrush, Northern Ireland">Portrush</option>
+				<option value="Portsmouth, England">Portsmouth</option>
+				<option value="Sheerness, England">Sheerness</option>
+				<option value="St. Helier, Jersey, Channel Islands">St. Helier</option>
+				<option value="St. Mary's, Isles of Scilly, England">St. Mary's</option>
+				<option value="Stornoway, Isle of Lewis, Scotland">Stornoway</option>
+				<option value="Tobermory, Island of Mull, Scotland">Tobermory</option>
+				<option value="Ullapool, Scotland">Ullapool</option>
+				<option value="Weymouth, England">Weymouth</option>
+				<option value="Whitby, England">Whitby</option>
+				<option value="Wick, Scotland">Wick</option>
+				<option value="Workington, England">Workington</option>
+			</select>
+			on
+			<input type="date" id="timestamp" name="timestamp" onchange="reload()"/>
+			for
+			<select name="days" id="days" onchange="reload()">
+				<option value="1">1 day</option>
+				<option selected="selected" value="2">2 days</option>
+				<option value="5">5 days</option>
+				<option value="7">1 week</option>
+			</select>
+		</h1>
+		<div class="chart-container">
+			<canvas id="tideChart"></canvas>
+		</div>
+		<!--
+			<input type="button" id="btnDetails" name="btnTimestamp" onclick="alert('hello!');" value="Details"/>
+		-->
+		<script>
+			function addDays(date, days) {
+				var result = new Date(date);
+				result.setDate(result.getDate() + days);
+				return result;
+			}
+			function reload() {
+				
+				const minHeight = -0.5;
+				const maxHeight = 8.5;
+				const midnight_line_colour = 'rgb(160,160,160)';
+				
+				var timestamp = document.getElementById('timestamp');
+				var loc = document.getElementById('location');
+				var days = document.getElementById('days');
+				var chart_start_timestamp = new Date(timestamp.value);
+				chart_start_timestamp.setHours(0,0,0,0);
+				var chart_end_timestamp = addDays(chart_start_timestamp, parseInt(days.value, 10));
+				console.log("xMin: " + chart_start_timestamp.toISOString() + ", xMax: " + chart_end_timestamp.toISOString());
+				
+				console.log("Reload called for location: " + loc.value + ", date: " + timestamp.value + ", days: " + days.value);
+				fetch("heights.php?format=json&location=" + loc.value + "&timestamp=" + timestamp.value + "&days=" + days.value, {cache: "reload"})
+				.then(response => response.json())
+				.then(data => {
+					// Create dataset
+					const chartData = {
+						labels: [],
+						datasets: [{
+							label: 'Tide Height',
+							data: [], /* Tidal data filled in later from API */
+							pointRadius: 2.5,
+							borderColor: 'rgb(75, 192, 192)',
+							tension: 0.33
+						}]
+					};
+					
+					// Populate dataset from JSON
+					data.forEach(item => {
+						var date = new Date(item[0] * 1000); // Convert Unix timestamp to milliseconds
+						chartData.labels.push(date);
+						chartData.datasets[0].data.push({x: date, y: item[1]});
+					});
+					
+					
+					
+					// Set chart options
+					var options = {
+						animation: false,
+						responsive: true,
+						maintainAspectRatio: false,
+						
+						plugins: {
+							title: {
+								display: false,
+							},
+							legend: {
+								display: false
+							},
+							annotation: {
+								annotations: {
+									current_time_line: {
+										type: 'line',
+										xMin: new Date(),
+										xMax: new Date(),
+										borderColor: 'rgb(255, 99, 132)',
+										borderWidth: 3,
+									}, /* midnight lines are generated dynamically so are not in this section */
+								}
+							}
+						},
+						scales: {
+							x: {
+								type: 'time',
+								min: chart_start_timestamp,
+								max: chart_end_timestamp,
+								time: {
+									round: 'minute',
+									tooltipFormat: 'yyyy-MM-dd HH:mm',
+									displayFormats: { /* force display formats at possible zoom levels */
+										millisecond: 'HH:mm:ss',
+										second: 'HH:mm:ss',
+										minute: 'HH:mm',
+										hour: 'HH:mm'
+									}
+								},
+								ticks: {
+									major: true,
+									stepSize: 1
+								},
+							},
+							y: {
+								min: minHeight,
+								max: maxHeight,
+								title: {
+									display: true,
+									text: 'Height (m) above chart datum'
+								}
+							},
+						}
+					};
+					
+					// Add gray lines at midnights
+					var annotations = options.plugins.annotation.annotations;
+					for (let i = 0; i < days.value; i++) {
+						var current_midnight = new Date(chart_start_timestamp);
+						current_midnight.setHours(0,0,0,0);
+						current_midnight.setDate(current_midnight.getDate() + i);
+						var current_midnight_line = {
+							type: 'line',
+							xMin: current_midnight,
+							xMax: current_midnight,
+							borderColor: midnight_line_colour,
+							borderWidth: 1.5,
+						};						
+						annotations['line' + i] = current_midnight_line;
+					}
+					
+					// Scale chart to viewport
+					var chartCanvas = document.getElementById('tideChart'); //<canvas> id
+					chartCanvas.width = window.innerWidth * 0.9;
+					chartCanvas.height = window.innerHeight * 0.9;
+					
+					// Check if chart has been created previously. If so destroy it to make a new one
+					let chartStatus = Chart.getChart("tideChart"); // <canvas> id
+					if (chartStatus != undefined) {
+						chartStatus.destroy();
+					}
+					
+					var chartInstance = new Chart(chartCanvas, {
+						type: 'line',
+						data: chartData,
+						options: options
+					});
+					
+				});
+			}
+			
+			// Set the date picker to default to today (or yesterday if the time is between 00:01 and 06:00)
+			var timestampElem = document.getElementById('timestamp');
+			var now = new Date();
+			
+			if (now.getHours() < 6) {
+				now = addDays(now, -1); // Start yesterday so we can see previous tide
+			}
+			timestampElem.valueAsDate = now; // Note time part gets stripped when saved in input type="date"
+			
+			reload();
+		</script>
+	</body>
+</html>
+

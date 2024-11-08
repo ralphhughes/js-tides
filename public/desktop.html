@@ -3,14 +3,18 @@
 
 <head>
 	<meta charset="utf-8">
-	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+
 	<title>Tides - Desktop version</title>
 	<style>
 		#myDiv {
 			height: 90vh;
 		}
+		body {
+			font-family: 'Roboto', Arial, sans-serif;
+		}
 	</style>
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="js/plotly-latest.min.js"></script>
 	<script>
 		var isMobile = Math.min(window.screen.width, window.screen.height) < 768 || navigator.userAgent.indexOf("Mobi") > -1;
 		if (isMobile) {
