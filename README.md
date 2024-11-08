@@ -10,6 +10,7 @@ Example for Ubuntu Linux 18.04:
 ```
 $ sudo apt install xtide
 
+# Install nginx and PHP-FPM
 $ sudo apt install nginx php-fpm
 
 $ echo "server {
@@ -23,9 +24,11 @@ $ echo "server {
 }
 " >> /etc/nginx/sites-enabled/default
 
-$ cd /var/www/html
+# Clone this repo
+$ git clone https://github.com/ralphhughes/js-tides.git
 
-$ git clone https://github.com/ralphhughes/js-tides.git .
+# Symlink the public folder from this repo into the root of your nginx install
+$ ln -s ./public /var/www/html
 
 ```
 
