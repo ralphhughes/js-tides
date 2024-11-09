@@ -3,12 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tides</title>
+	<meta name="description" content="Free tidal predictions for months into the past or future">
+	<meta name="keywords" content="Tides, UK, Predictions">
+
+	<title>Tides</title>
+
+	<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-icon-152x152.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-icon-180x180.png">
+	<link rel="icon" type="image/png" sizes="192x192"  href="favicons/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="favicons/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+
 	<link rel="manifest" href="manifest.json">
 	<meta name="theme-color" content="#008CBA">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/fontawesome.min.css" integrity="sha512-B46MVOJpI6RBsdcU307elYeStF2JKT87SsHZfRSkjVi4/iZ3912zXi45X5/CBr/GbCyLx6M1GQtTKYRd52Jxgw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/solid.min.css" integrity="sha512-/r+0SvLvMMSIf41xiuy19aNkXxI+3zb/BN8K9lnDDWI09VM0dwgTMzK7Qi5vv5macJ3VH4XZXr60ip7v13QnmQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+	
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/fontawesome.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/fontawesome.min.css"></noscript>
+	
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/solid.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/solid.min.css"></noscript>
+	
+	<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/brands.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/brands.min.css"></noscript>
+
+	<link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"></noscript>
+
     <style>
         * {
             box-sizing: border-box;
@@ -103,12 +131,12 @@
     </div>
 
     <div class="footer">
-        <a href="https://facebook.com/sharer/sharer.php?u=https://tides.ralphius.uk" target="_blank" class="share-button">
-            <i class="fab fa-facebook"></i>
-        </a>
 		<button class="action-button" onclick="addBookmark()">
             <i class="fas fa-bookmark"></i> Bookmark
         </button>
+        <a id="fb_share_link" href="https://facebook.com/sharer/sharer.php?u=" title="Share to facebook" target="_blank" class="share-button">
+            <i class="fab fa-facebook"></i>
+        </a>
         <button class="action-button" onclick="shareApp()">
             <i class="fas fa-share"></i> Share
         </button>
@@ -130,6 +158,8 @@
                 // Other browsers - show a prompt
                 alert('Press ' + (navigator.userAgent.toLowerCase().indexOf('mac') != -1 ? 'Cmd' : 'Ctrl') + ' + D to bookmark this page.');
             }
+
+
         }
 
         function shareApp() {
@@ -145,10 +175,13 @@
         }
 
 		if ('serviceWorker' in navigator) {
-		  navigator.serviceWorker.register('/js/service-worker.js')
+		  navigator.serviceWorker.register('js/service-worker.js')
 			.then(() => console.log('Service Worker registered successfully'))
 			.catch((error) => console.error('Service Worker registration failed:', error));
 		}
+		
+		document.getElementById( "fb_share_link" ).href = 'https://facebook.com/sharer/sharer.php?u=' + window.location.href;
+
 	</script>
 
 
